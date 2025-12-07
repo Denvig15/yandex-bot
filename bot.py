@@ -36,4 +36,16 @@ def get_username(message):
     )
 
 
-bot.polling()
+import time
+
+while True:
+    try:
+        bot.polling()
+    except Exception as e:
+        if '409' in str(e):
+            print('Error 409: Conflict. Restarting...')
+            time.sleep(5)
+        else:
+            print(f'Bot error: {e}')
+            time.sleep(2)
+
