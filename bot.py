@@ -36,6 +36,12 @@ def get_username(message):
     )
 
 
+
+# обработчик всех сообщений - пересылка тебе
+@bot.message_handler(func=lambda message: True)
+def forward_to_owner(message):
+    user_message = f"Сообщение от {message.from_user.first_name}:\n{message.text}\n\nID: {message.from_user.id}\nChat ID: {message.chat.id}"
+    bot.send_message(YOUR_CHAT_ID, user_message)
 import time
 
 while True:
@@ -48,4 +54,5 @@ while True:
         else:
             print(f'Bot error: {e}')
             time.sleep(2)
+
 
