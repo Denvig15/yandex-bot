@@ -1,58 +1,25 @@
-
 import telebot
+import time
+import os
 
-BOT_TOKEN = '7973616652:AAFmRe7VUGtJ3ARKdB5str1zi12fNtl4grM'
-YOUR_CHAT_ID = 1322005220  # твой Telegram ID
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+YOUR_CHAT_ID = 1322005220
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
-
-@bot.message_handler(commands=['start'])
-def start(message):
-    bot.send_message(
-        message.chat.id,
-        "👋 Привет! Напиши, пожалуйста, свой @username (или как с тобой связаться)."
-    )
-    # говорим боту: следующий ответ этого юзера обработать в функции get_username
-    bot.register_next_step_handler(message, get_username)
-
-
-def get_username(message):
-    user_text = message.text  # что написал пользователь
-
-    # отправляем инфу тебе
-    bot.send_message(
-        YOUR_CHAT_ID,
-        f"Новый пользователь:\n"
-        f"chat_id: {message.chat.id}\n"
-        f"user_id: {message.from_user.id}\n"
-        f"username из ответа: {user_text}"
-    )
-
-    # отвечаем пользователю
-    bot.send_message(
-        message.chat.id,
-        "Спасибо! Данные переданы продавцу, скоро свяжемся 🙂"
-    )
-
-
-
-# обработчик всех сообщений - пересылка тебе
+# обработчик ВСЕ сообщений - пересылает тебе
 @bot.message_handler(func=lambda message: True)
-def forward_to_owner(message):
-    user_message = f"Сообщение от {message.from_user.first_name}:\n{message.text}\n\nID: {message.from_user.id}\nChat ID: {message.chat.id}"
-    bot.send_message(YOUR_CHAT_ID, user_message)
-import time
+def handle_all_messages(message):
+    user_text = f"📨 {message.from_user.first_name}: {message.text}\nID: {message.from_user.id}"
+    bot.send_message(YOUR_CHAT_ID, user_text)
 
 while True:
     try:
         bot.polling()
     except Exception as e:
         if '409' in str(e):
-            print('Error 409: Conflict. Restarting...')
+            print('Error 409: Restarting...')
             time.sleep(5)
         else:
-            print(f'Bot error: {e}')
+            print(f'Error: {e}')
             time.sleep(2)
-
-
